@@ -1,8 +1,0 @@
-[run]
-omit =
-    tests/*
-    settings$
-    urls$
-    locale$
-    django
-    utm_tracker/migrations/*
