@@ -3,10 +3,10 @@ from typing import Any, List
 
 from django.contrib.sessions.backends.base import SessionBase
 from django.utils.timezone import now as tz_now
-
+from common.djangoapps.student.models import CourseEnrollment
 from .models import LeadSource
 from .types import UtmParamsDict
-
+from django.core.exceptions import ObjectDoesNotExist
 SESSION_KEY_UTM_PARAMS = "utm_params"
 
 logger = logging.getLogger(__name__)
@@ -70,12 +70,19 @@ def dump_utm_params(user: Any, session: SessionBase,session_cookies:Any,) -> Lis
     session_id= "None"
     if session_cookies['lms_sessionid']:
         session_id= session_cookies['lms_sessionid']
-
-    for params in pop_utm_params(session):
+    course_id = session.pop('course_id', [])
+    if course_id:
         try:
-            # import pdb;pdb.set_trace()
-            created.append(LeadSource.objects.create_from_utm_params(user, params,session_id))
-        except ValueError as ex:
-            msg = str(ex)
-            logger.debug("Unable to save utm_params %s: %s", params, msg)
+            CourseEnrollment.objects.get(user_id=user.id,course_id=course_id)
+            logger.info("This course is already enrolled by user %s: in course %s", user, course_id)
+        except ObjectDoesNotExist:
+            for params in pop_utm_params(session):
+                try:
+                    # import pdb;pdb.set_trace()
+                    created.append(LeadSource.objects.create_from_utm_params(user, params,session_id,course_id))
+                except ValueError as ex:
+                    msg = str(ex)
+                    logger.debug("Unable to save utm_params %s: %s", params, msg)
+        except Exception as e:
+            logger.error("!!!! Error  %s", e)
     return created

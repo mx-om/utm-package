@@ -10,7 +10,7 @@ from .types import UtmParamsDict
 
 class LeadSourceManager(models.Manager):
     def create_from_utm_params(
-        self, user: type[Model], utm_params: UtmParamsDict,session_id
+        self, user: type[Model], utm_params: UtmParamsDict,session_id,course_id
     ) -> LeadSource:
         """Persist a LeadSource dictionary of utm_* values."""
         try:
@@ -29,6 +29,7 @@ class LeadSourceManager(models.Manager):
                 twclid=params.pop("twclid", "")[:255],
                 fbclid=params.pop("fbclid", "")[:255],
                 session_id= session_id,
+                course_id=course_id,
                 # everything that hasn't already been popped is custom
                 custom_tags=params,
             )
@@ -174,6 +175,13 @@ class LeadSource(models.Model):
         max_length=150,
         choices = ENNORLLMENT_CHOICES,
         default = 'INCOMPLETE' 
+    )
+    course_id = models.CharField(
+        max_length=250,
+        help_text=(
+            "course_id: The course id of the course "
+        ),
+        blank=True,
     )
     objects = LeadSourceManager()
 

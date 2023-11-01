@@ -8,6 +8,6 @@ from .utils import *
 # @receiver(post_save,sender=CourseEnrollment)
 def update_enrollment_utm(sender,**kwargs):
     lms_session_data = kwargs.get('request')
-    lms_session_enrollment= kwargs.get('enrollment')
-    update_leassourceenrollment(lms_session_data=lms_session_data,lms_session_enrollment=lms_session_enrollment)
+    lms_enrollment= kwargs.get('enrollment')
+    update_leassourceenrollment(lms_session_data=lms_session_data,lms_enrollment=lms_enrollment)
     
