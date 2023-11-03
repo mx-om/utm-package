@@ -21,24 +21,24 @@ class LeadSourceUrlTrackerAdmin(admin.ModelAdmin):
 
     def changelist_view(self, request, extra_context=None):
         get_lead_data = LeadSource.objects.all()
-        all_courses = get_lead_data.values('course_id').distinct()
+        all_courses = get_lead_data.values('medium','source','campaign','course_id').distinct()
         Overall_source_data = []
-        for course in all_courses:
-            all_source = get_lead_data.values('medium','source','campaign').distinct()
-            for source in all_source:
-                source_name = source['medium']+'__'+source['source']+'__'+source['campaign']
-                count_clicked = get_lead_data.filter(medium=source['medium'],source=source['source'],campaign=source['campaign'],course_id=course['course_id']).count()
-                count_enrolled = get_lead_data.filter(medium=source['medium'],source=source['source'],campaign=source['campaign'],course_id=course['course_id'],enrollment='Completed').count()
-                count_pending = get_lead_data.filter(medium=source['medium'],source=source['source'],campaign=source['campaign'],course_id=course['course_id'],enrollment='Incomplete').count()
+        for source in all_courses:
+            #all_source = get_lead_data.values('medium','source','campaign','course_id').distinct()
+            
+            source_name = source['medium']+'__'+source['source']+'__'+source['campaign']
+            count_clicked = get_lead_data.filter(medium=source['medium'],source=source['source'],campaign=source['campaign'],course_id=source['course_id']).count()
+            count_enrolled = get_lead_data.filter(medium=source['medium'],source=source['source'],campaign=source['campaign'],course_id=source['course_id'],enrollment='Completed').count()
+            count_pending = get_lead_data.filter(medium=source['medium'],source=source['source'],campaign=source['campaign'],course_id=source['course_id'],enrollment='Incomplete').count()
 
-                source_count_data = {
-                    'course_id':course['course_id'],
+            source_count_data = {
+                    'course_id':source['course_id'],
                     'source_name':source_name,
                     'count_clicked':count_clicked,
                     'count_enrolled':count_enrolled,
                     'count_pending':count_pending
                 }
-                Overall_source_data.append(source_count_data)
+            Overall_source_data.append(source_count_data)
         extra_context = {'overall_clicks': get_lead_data.count(), 'overall_source_data':Overall_source_data}
         return super(LeadSourceUrlTrackerAdmin, self).changelist_view(request, extra_context=extra_context)
 
