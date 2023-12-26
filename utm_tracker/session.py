@@ -7,6 +7,8 @@ from common.djangoapps.student.models import CourseEnrollment
 from .models import LeadSource
 from .types import UtmParamsDict
 from django.core.exceptions import ObjectDoesNotExist
+from django.conf import settings
+
 SESSION_KEY_UTM_PARAMS = "utm_params"
 
 logger = logging.getLogger(__name__)
@@ -66,9 +68,10 @@ def dump_utm_params(user: Any, session: SessionBase,session_cookies:Any,) -> Lis
     """
     created = []
     # import pdb;pdb.set_trace()
+    lms_session_id = settings.FEATURES.get('LMS_SESSION_ID', 'sessionid')
     session_id= "None"
-    if session_cookies['sessionid']:
-        session_id= session_cookies['sessionid']
+    if session_cookies[lms_session_id]:
+        session_id= session_cookies[lms_session_id]
     course_id = session.pop('course_id', [])
     if course_id:
         try:
