@@ -67,8 +67,8 @@ def dump_utm_params(user: Any, session: SessionBase,session_cookies:Any,) -> Lis
     created = []
     # import pdb;pdb.set_trace()
     session_id= "None"
-    if session_cookies['lms_sessionid']:
-        session_id= session_cookies['lms_sessionid']
+    if session_cookies['sessionid']:
+        session_id= session_cookies['sessionid']
     course_id = session.pop('course_id', [])
     if course_id:
         try:
