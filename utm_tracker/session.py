@@ -53,7 +53,6 @@ def pop_utm_params(session: SessionBase) -> List[UtmParamsDict]:
     """Pop the list of utm_param dicts from a session."""
     return session.pop(SESSION_KEY_UTM_PARAMS, [])
 
-
 def dump_utm_params(user: Any, session: SessionBase,session_cookies:Any,) -> List[LeadSource]:
     """
     Flush utm_params from the session and save as LeadSource objects.
@@ -68,18 +67,22 @@ def dump_utm_params(user: Any, session: SessionBase,session_cookies:Any,) -> Lis
     created = []
     # import pdb;pdb.set_trace()
     session_id= "None"
-    if session_cookies['sessionid']:
-        session_id= session_cookies['sessionid']
+    if session_cookies['lms_sessionid']:
+        session_id= session_cookies['lms_sessionid']
     course_id = session.pop('course_id', [])
     if course_id:
         try:
             CourseEnrollment.objects.get(user_id=user.id,course_id=course_id)
             logger.info("This course is already enrolled by user %s: in course %s", user, course_id)
         except ObjectDoesNotExist:
+            
             for params in pop_utm_params(session):
                 try:
-                    # import pdb;pdb.set_trace()
-                    created.append(LeadSource.objects.create_from_utm_params(user, params,session_id,course_id))
+                    # check for duplicate entry
+                    lead_source = LeadSource.objects.filter(session_id= session_id,course_id=course_id).first()
+                    if not lead_source:
+
+                        created.append(LeadSource.objects.create_from_utm_params(user, params,session_id,course_id))
                 except ValueError as ex:
                     msg = str(ex)
                     logger.debug("Unable to save utm_params %s: %s", params, msg)
