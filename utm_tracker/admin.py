@@ -5,9 +5,9 @@ from .models import LeadSource
 
 class LeadSourceAdmin(admin.ModelAdmin):
     raw_id_fields = ("user",)
-    list_display = ("user", "medium", "source", "campaign", "timestamp","enrollment")
-    search_fields = ("user__first_name", "user__last_name", "term", "content")
-    list_filter = ("medium", "source", "timestamp")
+    list_display = ("course_id", "user", "medium", "source", "campaign", "timestamp","enrollment")
+    search_fields = ("course_id", "medium", "source", "campaign","=enrollment")
+    list_filter = ("medium", "source", "enrollment")
     readonly_fields = ("created_at", "timestamp")
 
 class LeadSourceUrlTracker(LeadSource):
