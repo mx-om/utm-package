@@ -14,7 +14,7 @@ def package_data(pkg, root):
 
 
 setup(
-    name='django-utm-tracker',
+    name='utm_tracker',
     version='0.1',
     packages=find_packages(include=['utm_tracker']),
     description='This utm-tracker provides a way to track utm source urls',
